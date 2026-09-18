@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Uma peça por dia ❤</title>
+<style>
+*{box-sizing:border-box}body{margin:0;min-height:100vh;color:#fff7fc;background:radial-gradient(circle at 15% 10%,#512448,transparent 32%),radial-gradient(circle at 85% 90%,#3d1938,transparent 35%),#100a15;font-family:Georgia,serif}
+body:before{content:"";position:fixed;inset:0;pointer-events:none;background-image:radial-gradient(#fff 1px,transparent 1px);background-size:40px 40px;opacity:.06}
+main{width:min(980px,94%);margin:auto;padding:38px 0 60px}.hero{text-align:center}.heart{font-size:50px;animation:pulse 1.7s infinite}@keyframes pulse{50%{transform:scale(1.12)}}h1{font-size:clamp(2rem,6vw,3.8rem);margin:5px 0 10px}.sub{color:#d4c0d0;font:15px Arial,sans-serif}
+.card{background:#21142af0;border:1px solid #ffffff18;border-radius:24px;padding:24px;margin:20px 0;box-shadow:0 18px 60px #0008}.status{text-align:center;font-family:Arial,sans-serif}.date{color:#ffd0e3;font-weight:700}.counter{font-size:1.12rem;margin:8px}.bar{height:12px;background:#0c0810;border-radius:99px;overflow:hidden;max-width:620px;margin:18px auto}.bar span{display:block;height:100%;width:0;background:linear-gradient(90deg,#ff5fa8,#ffd0e3);transition:.5s}
+#board{width:min(90vw,760px);aspect-ratio:6/5;display:grid;grid-template-columns:repeat(6,1fr);grid-template-rows:repeat(5,1fr);gap:4px;margin:0 auto;background:#08050a;padding:4px;border-radius:16px}
+.slot{position:relative;overflow:hidden;background:linear-gradient(145deg,#38223f,#1b1022);border-radius:4px;display:grid;place-items:center;border:1px solid #ffffff0c}.slot.empty{border:1px dashed #ffffff18}.slot img{width:100%;height:100%;object-fit:cover;display:block}.slot .n{position:absolute;bottom:3px;right:5px;font:10px Arial;color:#fff8}.locked{font-size:clamp(17px,4vw,30px)}
+#pieces{display:grid;grid-template-columns:repeat(auto-fit,minmax(90px,1fr));gap:8px;margin:20px auto 0;max-width:760px}.piece{aspect-ratio:1;position:relative;border-radius:8px;overflow:hidden;background:#2c1a34;border:2px solid #ffffff12;cursor:grab}.piece img{width:100%;height:100%;object-fit:cover}.piece.locked{cursor:not-allowed;filter:brightness(.42);display:grid;place-items:center}.piece.used{opacity:.25;cursor:default}.piece .lock{position:absolute;inset:0;display:grid;place-items:center;font-size:25px}.piece .label{position:absolute;bottom:2px;right:4px;font:10px Arial;color:#fff}
+.message{text-align:center;min-height:25px;margin:17px 0 0;color:#a4f2c8;font:14px Arial}.hint{text-align:center;color:#c2aec0;font:14px Arial;line-height:1.6}.loading{text-align:center;color:#d9c8d5;font:14px Arial}
+.final{display:none;text-align:center}.final.show{display:block}.final h2{font-size:clamp(2rem,7vw,3.8rem);margin:10px 0 18px}.final p{font-size:1.2rem;line-height:1.7}.big{font-size:58px}
+button{border:0;border-radius:999px;padding:11px 18px;background:#ff68aa;color:#fff;font-weight:bold;cursor:pointer}.reset{display:block;margin:18px auto 0;background:#4c3155}
+@media(max-width:600px){#pieces{grid-template-columns:repeat(5,1fr)}.card{padding:16px}}
+</style>
+</head>
+<body><main>
+<section class="hero"><div class="heart">♥</div><h1>Uma peça por dia</h1><div class="sub">Uma surpresa está sendo montada especialmente para você.</div></section>
+<section class="card status"><div class="date" id="date">Verificando a data...</div><div class="counter" id="counter">Conectando ao relógio oficial...</div><div class="bar"><span id="bar"></span></div></section>
+<section class="card">
+<div id="loading" class="loading">Só um instante...</div>
+<div id="board" hidden></div>
+<div id="pieces"></div>
+<div id="message" class="message"></div>
+<p class="hint">Arraste as peças liberadas para os espaços do quebra-cabeça. Uma nova peça é liberada por dia, de 1 a 30 de outubro.</p>
+<button class="reset" id="reset">Embaralhar minhas peças</button>
+</section>
+<section class="card final" id="final"><div class="big">❤</div><h2>❤ feliz aniversário meu bombomzinho ❤</h2><p>Você conseguiu completar a surpresa.</p></section>
+</main>
+<script>
+const WORKER_URL="https://presente-aniversario.catcute758.workers.dev";
+const TOTAL=30,COLS=6,ROWS=5;
+let releasedCount=0, order=[], placed=JSON.parse(localStorage.getItem("placedPieces")||"{}");
+
+async function getServerDate(){const r=await fetch(WORKER_URL+"?t="+Date.now(),{cache:"no-store"});if(!r.ok)throw Error();const x=await r.json();return new Date(x.date+"T12:00:00")}
+function released(d){const y=d.getFullYear(),m=d.getMonth()+1,day=d.getDate();if(y<2026||(y===2026&&m<10))return 0;if(y===2026&&m===10)return Math.min(day,TOTAL);return TOTAL}
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function save(){localStorage.setItem("placedPieces",JSON.stringify(placed))}
+function render(){
+ const board=document.getElementById("board"), tray=document.getElementById("pieces");board.innerHTML="";tray.innerHTML="";
+ for(let i=0;i<TOTAL;i++){const slot=document.createElement("div");slot.className="slot";slot.dataset.target=i+1;
+   if(placed[i+1]){const im=document.createElement("img");im.src=`pieces/piece_${String(i+1).padStart(2,"0")}.jpg`;slot.appendChild(im)}
+   else if(i>=releasedCount){slot.classList.add("empty");slot.textContent="🔒"}
+   else slot.classList.add("empty");
+   board.appendChild(slot);
+   slot.ondragover=e=>{if(i<releasedCount)e.preventDefault()};
+   slot.ondrop=e=>{e.preventDefault();const num=Number(e.dataTransfer.getData("piece"));if(num===i+1){placed[num]=true;save();render();if(Object.keys(placed).length===TOTAL)document.getElementById("final").classList.add("show");else document.getElementById("message").textContent="Peça encaixada! ❤"}};
+ }
+ const available=[];for(let i=1;i<=releasedCount;i++)if(!placed[i])available.push(i);
+ order=shuffle(available);
+ for(const n of order){const el=document.createElement("div");el.className="piece";el.draggable=true;const im=document.createElement("img");im.src=`pieces/piece_${String(n).padStart(2,"0")}.jpg`;el.appendChild(im);const lab=document.createElement("span");lab.className="label";lab.textContent=n;el.appendChild(lab);el.ondragstart=e=>e.dataTransfer.setData("piece",n);tray.appendChild(el)}
+}
+async function start(){try{const now=await getServerDate();releasedCount=released(now);document.getElementById("date").textContent=now.toLocaleDateString("pt-BR",{weekday:"long",day:"2-digit",month:"long",year:"numeric"});document.getElementById("counter").textContent=releasedCount===0?"A primeira peça será liberada em 1º de outubro.":`${releasedCount} de ${TOTAL} peças liberadas`;document.getElementById("bar").style.width=releasedCount/TOTAL*100+"%";document.getElementById("loading").hidden=true;document.getElementById("board").hidden=false;render();if(releasedCount===TOTAL&&Object.keys(placed).length===TOTAL)document.getElementById("final").classList.add("show")}catch(e){document.getElementById("loading").textContent="Não foi possível verificar a data oficial. Atualize a página em alguns segundos."}}
+document.getElementById("reset").onclick=()=>{placed={};save();render();document.getElementById("final").classList.remove("show")};
+start();
+</script></body></html>
