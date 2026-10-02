@@ -1,59 +1,96 @@
 <!doctype html>
 <html lang="pt-BR">
 <head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#160b1d">
 <title>Uma peça por dia ❤</title>
 <style>
-*{box-sizing:border-box}body{margin:0;min-height:100vh;color:#fff7fc;background:radial-gradient(circle at 15% 10%,#512448,transparent 32%),radial-gradient(circle at 85% 90%,#3d1938,transparent 35%),#100a15;font-family:Georgia,serif}
-body:before{content:"";position:fixed;inset:0;pointer-events:none;background-image:radial-gradient(#fff 1px,transparent 1px);background-size:40px 40px;opacity:.06}
-main{width:min(980px,94%);margin:auto;padding:38px 0 60px}.hero{text-align:center}.heart{font-size:50px;animation:pulse 1.7s infinite}@keyframes pulse{50%{transform:scale(1.12)}}h1{font-size:clamp(2rem,6vw,3.8rem);margin:5px 0 10px}.sub{color:#d4c0d0;font:15px Arial,sans-serif}
-.card{background:#21142af0;border:1px solid #ffffff18;border-radius:24px;padding:24px;margin:20px 0;box-shadow:0 18px 60px #0008}.status{text-align:center;font-family:Arial,sans-serif}.date{color:#ffd0e3;font-weight:700}.counter{font-size:1.12rem;margin:8px}.bar{height:12px;background:#0c0810;border-radius:99px;overflow:hidden;max-width:620px;margin:18px auto}.bar span{display:block;height:100%;width:0;background:linear-gradient(90deg,#ff5fa8,#ffd0e3);transition:.5s}
-#board{width:min(90vw,760px);aspect-ratio:6/5;display:grid;grid-template-columns:repeat(6,1fr);grid-template-rows:repeat(5,1fr);gap:4px;margin:0 auto;background:#08050a;padding:4px;border-radius:16px}
-.slot{position:relative;overflow:hidden;background:linear-gradient(145deg,#38223f,#1b1022);border-radius:4px;display:grid;place-items:center;border:1px solid #ffffff0c}.slot.empty{border:1px dashed #ffffff18}.slot img{width:100%;height:100%;object-fit:cover;display:block}.slot .n{position:absolute;bottom:3px;right:5px;font:10px Arial;color:#fff8}.locked{font-size:clamp(17px,4vw,30px)}
-#pieces{display:grid;grid-template-columns:repeat(auto-fit,minmax(90px,1fr));gap:8px;margin:20px auto 0;max-width:760px}.piece{aspect-ratio:1;position:relative;border-radius:8px;overflow:hidden;background:#2c1a34;border:2px solid #ffffff12;cursor:grab}.piece img{width:100%;height:100%;object-fit:cover}.piece.locked{cursor:not-allowed;filter:brightness(.42);display:grid;place-items:center}.piece.used{opacity:.25;cursor:default}.piece .lock{position:absolute;inset:0;display:grid;place-items:center;font-size:25px}.piece .label{position:absolute;bottom:2px;right:4px;font:10px Arial;color:#fff}
-.message{text-align:center;min-height:25px;margin:17px 0 0;color:#a4f2c8;font:14px Arial}.hint{text-align:center;color:#c2aec0;font:14px Arial;line-height:1.6}.loading{text-align:center;color:#d9c8d5;font:14px Arial}
-.final{display:none;text-align:center}.final.show{display:block}.final h2{font-size:clamp(2rem,7vw,3.8rem);margin:10px 0 18px}.final p{font-size:1.2rem;line-height:1.7}.big{font-size:58px}
-button{border:0;border-radius:999px;padding:11px 18px;background:#ff68aa;color:#fff;font-weight:bold;cursor:pointer}.reset{display:block;margin:18px auto 0;background:#4c3155}
-@media(max-width:600px){#pieces{grid-template-columns:repeat(5,1fr)}.card{padding:16px}}
+:root{--bg:#100812;--card:#211326ee;--pink:#ff72ad;--pink2:#ffb9d5;--text:#fff8fc;--muted:#cdb9ca;--line:#ffffff18;--good:#a8f0c8}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;background:var(--bg);color:var(--text)}
+body{font-family:Georgia,serif;overflow-x:hidden;background:
+ radial-gradient(circle at 12% 5%,#63294e 0,transparent 27%),
+ radial-gradient(circle at 92% 28%,#3e1e4c 0,transparent 25%),
+ radial-gradient(circle at 50% 100%,#32162e 0,transparent 35%),var(--bg)}
+body:before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.055;background-image:radial-gradient(#fff 1px,transparent 1px);background-size:34px 34px}
+main{width:min(760px,94%);margin:auto;padding:22px 0 calc(40px + env(safe-area-inset-bottom))}
+.hero{text-align:center;padding:4px 10px 8px}.heart{font-size:42px;line-height:1;filter:drop-shadow(0 0 16px #ff5fa866);animation:pulse 1.8s infinite}@keyframes pulse{50%{transform:scale(1.1)}}
+h1{font-size:clamp(2rem,8vw,3.4rem);line-height:1.05;margin:9px 0 9px;letter-spacing:-.03em}.sub{font:14px/1.5 Arial,sans-serif;color:var(--muted)}
+.card{background:linear-gradient(145deg,#28182ff2,#1b1023ee);border:1px solid var(--line);border-radius:26px;padding:17px;margin:14px 0;box-shadow:0 20px 65px #0008, inset 0 1px #ffffff0a}
+.status{text-align:center;font-family:Arial,sans-serif}.date{color:var(--pink2);font-weight:800;text-transform:capitalize}.counter{font-size:15px;margin:8px 0;color:#f6e8f1}.bar{height:9px;background:#0b0710;border-radius:99px;overflow:hidden;max-width:560px;margin:14px auto 2px}.bar span{display:block;height:100%;width:0;background:linear-gradient(90deg,#ff5b9f,#ffd0e4);transition:width .6s ease}
+.game-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:11px;font:12px Arial,sans-serif;color:var(--muted)}.badge{padding:7px 10px;border:1px solid #ffffff18;border-radius:99px;background:#ffffff08}.badge strong{color:#fff}
+#board{width:min(94vw,650px);aspect-ratio:6/5;display:grid;grid-template-columns:repeat(6,1fr);grid-template-rows:repeat(5,1fr);gap:2px;margin:0 auto;background:#08050a;padding:4px;border-radius:18px;box-shadow:0 16px 40px #0009,0 0 0 1px #ffffff0d;touch-action:none;user-select:none;-webkit-user-select:none}
+.slot{position:relative;overflow:hidden;background:linear-gradient(145deg,#39223f,#1b1022);border-radius:4px;display:grid;place-items:center;border:1px solid #ffffff0b;transition:.15s;touch-action:none}.slot.empty:after{content:"";position:absolute;inset:2px;border:1px dashed #ffffff14;border-radius:3px}.slot.targeted{outline:3px solid var(--pink);outline-offset:-2px;background:#482440;transform:scale(.99)}.slot img{width:100%;height:100%;object-fit:cover;display:block;pointer-events:none}.slot .lock{font-size:clamp(11px,3.5vw,25px);opacity:.45;z-index:1}
+.tray-title{font:700 13px Arial,sans-serif;margin:16px 2px 8px;color:#f8e9f2}.tray{display:flex;gap:9px;overflow-x:auto;overflow-y:hidden;padding:5px 3px 12px;scroll-snap-type:x proximity;scrollbar-width:thin;-webkit-overflow-scrolling:touch;touch-action:pan-x}.piece{flex:0 0 58px;width:58px;height:58px;position:relative;border-radius:12px;overflow:hidden;background:#2c1a34;border:1px solid #ffffff22;cursor:pointer;scroll-snap-align:start;user-select:none;-webkit-user-select:none;-webkit-user-drag:none;box-shadow:0 5px 14px #0007;transition:transform .14s,border-color .14s,box-shadow .14s,opacity .14s}.piece img{width:100%;height:100%;object-fit:cover;display:block;pointer-events:none;-webkit-user-drag:none}.piece .label{position:absolute;right:4px;bottom:3px;font:700 9px Arial;color:#fff;text-shadow:0 1px 4px #000}.piece.selected{border:2px solid var(--pink);box-shadow:0 0 0 3px #ff72ad33,0 8px 18px #0009;transform:translateY(-5px) scale(1.04)}
+.instructions{display:flex;align-items:center;gap:10px;background:#ffffff07;border:1px solid #ffffff12;border-radius:15px;padding:11px 12px;font:13px/1.45 Arial,sans-serif;color:#d8c6d5}.instructions .ico{font-size:22px}.message{text-align:center;min-height:22px;margin:9px 0 0;color:var(--good);font:700 13px Arial,sans-serif}.loading{text-align:center;color:#d9c8d5;font:14px Arial;padding:25px}.hint{text-align:center;color:#a993a7;font:12px/1.5 Arial,sans-serif;margin:10px auto 0}
+button{border:0;border-radius:999px;padding:12px 18px;background:linear-gradient(135deg,#ff5fa5,#ff83b7);color:#fff;font-weight:800;cursor:pointer;box-shadow:0 8px 20px #ff5fa533;touch-action:manipulation}.reset{display:block;margin:14px auto 0;background:#4b3155;box-shadow:none}
+.final{display:none;text-align:center}.final.show{display:block;animation:appear .6s ease}@keyframes appear{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}.final h2{font-size:clamp(1.7rem,8vw,3.4rem);line-height:1.12;margin:10px 0 16px}.final p{font:15px/1.7 Arial,sans-serif;color:#d8c6d5}.big{font-size:52px}
+.floating-piece{position:fixed;z-index:9999;pointer-events:none;width:76px;height:76px;border-radius:14px;overflow:hidden;border:3px solid var(--pink);box-shadow:0 15px 35px #000b;transform:translate(-50%,-50%) scale(1.05);background:#2c1a34}.floating-piece img{width:100%;height:100%;object-fit:cover;display:block}
+@media(min-width:601px){main{padding-top:34px}.piece{flex-basis:66px;width:66px;height:66px}.tray{justify-content:center;flex-wrap:wrap;overflow:visible}.instructions{justify-content:center}}
+@media(max-width:420px){main{width:96%;padding-top:17px}.card{padding:13px;border-radius:21px}.heart{font-size:37px}h1{font-size:clamp(1.9rem,10vw,2.55rem)}#board{width:96vw;padding:3px;border-radius:14px}.piece{flex-basis:54px;width:54px;height:54px}.tray{gap:7px}.game-head{margin-bottom:8px}}
+@media(max-width:350px){.piece{flex-basis:49px;width:49px;height:49px}.tray{gap:6px}}
 </style>
 </head>
 <body><main>
 <section class="hero"><div class="heart">♥</div><h1>Uma peça por dia</h1><div class="sub">Uma surpresa está sendo montada especialmente para você.</div></section>
 <section class="card status"><div class="date" id="date">Verificando a data...</div><div class="counter" id="counter">Conectando ao relógio oficial...</div><div class="bar"><span id="bar"></span></div></section>
 <section class="card">
-<div id="loading" class="loading">Só um instante...</div>
-<div id="board" hidden></div>
-<div id="pieces"></div>
-<div id="message" class="message"></div>
-<p class="hint">Arraste as peças liberadas para os espaços do quebra-cabeça. Uma nova peça é liberada por dia, de 1 a 30 de outubro.</p>
-<button class="reset" id="reset">Embaralhar minhas peças</button>
+ <div class="game-head"><span>QUEBRA-CABEÇA</span><span class="badge"><strong id="placedCount">0</strong>/<span id="totalCount">30</span> encaixadas</span></div>
+ <div id="loading" class="loading">Só um instante...</div>
+ <div id="board" hidden></div>
+ <div class="tray-title" id="trayTitle" hidden>Peças disponíveis</div>
+ <div id="pieces" class="tray" aria-label="Peças disponíveis"></div>
+ <div class="instructions" id="instructions" hidden><span class="ico">☝️</span><span><strong>Toque em uma peça</strong> para selecioná-la e depois toque no lugar certo do desenho. No computador, também dá para arrastar.</span></div>
+ <div id="message" class="message"></div>
+ <p class="hint">As peças aparecem menores e a faixa de peças pode ser deslizada para os lados no celular.</p>
+ <button class="reset" id="reset">Embaralhar minhas peças</button>
 </section>
 <section class="card final" id="final"><div class="big">❤</div><h2>❤ feliz aniversário meu bombomzinho ❤</h2><p>Você conseguiu completar a surpresa.</p></section>
 </main>
 <script>
 const WORKER_URL="https://presente-aniversario.catcute758.workers.dev";
 const TOTAL=30,COLS=6,ROWS=5;
-let releasedCount=0, order=[], placed=JSON.parse(localStorage.getItem("placedPieces")||"{}");
-
+let releasedCount=0;
+let placed=JSON.parse(localStorage.getItem("placedPieces")||"{}");
+let selectedPiece=null,drag=null;
 async function getServerDate(){const r=await fetch(WORKER_URL+"?t="+Date.now(),{cache:"no-store"});if(!r.ok)throw Error();const x=await r.json();return new Date(x.date+"T12:00:00")}
 function released(d){const y=d.getFullYear(),m=d.getMonth()+1,day=d.getDate();if(y<2026||(y===2026&&m<10))return 0;if(y===2026&&m===10)return Math.min(day,TOTAL);return TOTAL}
-function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
 function save(){localStorage.setItem("placedPieces",JSON.stringify(placed))}
+function pieceSrc(n){return `pieces/piece_${String(n).padStart(2,"0")}.jpg`}
+function updateCount(){document.getElementById("placedCount").textContent=Object.keys(placed).length}
+function placePiece(num){if(!num||num<1||num>releasedCount||placed[num])return;placed[num]=true;save();selectedPiece=null;render();document.getElementById("message").textContent="Peça encaixada! ❤";if(Object.keys(placed).length===TOTAL)document.getElementById("final").classList.add("show")}
+function selectPiece(num){if(placed[num])return;selectedPiece=selectedPiece===num?null:num;document.querySelectorAll(".piece").forEach(el=>el.classList.toggle("selected",Number(el.dataset.piece)===selectedPiece));document.getElementById("message").textContent=selectedPiece?`Peça ${selectedPiece} selecionada — agora toque no espaço dela. ❤`:""}
+function boardSlotAt(x,y){const el=document.elementFromPoint(x,y);return el?.closest?.(".slot")||null}
+function beginDrag(e,el,num){if(placed[num])return;drag={num,el,ghost:document.createElement("div"),pointerId:e.pointerId};drag.ghost.className="floating-piece";const im=document.createElement("img");im.src=pieceSrc(num);drag.ghost.appendChild(im);document.body.appendChild(drag.ghost);el.classList.add("dragging");try{el.setPointerCapture(e.pointerId)}catch{}moveGhost(e)}
+function moveGhost(e){if(!drag)return;drag.ghost.style.left=e.clientX+"px";drag.ghost.style.top=e.clientY+"px";const slot=boardSlotAt(e.clientX,e.clientY);document.querySelectorAll(".slot.targeted").forEach(s=>s.classList.remove("targeted"));if(slot&&Number(slot.dataset.target)===drag.num)slot.classList.add("targeted")}
+function endDrag(e){if(!drag)return;const num=drag.num,el=drag.el,slot=boardSlotAt(e.clientX,e.clientY);document.querySelectorAll(".slot.targeted").forEach(s=>s.classList.remove("targeted"));el.classList.remove("dragging");drag.ghost.remove();drag=null;if(slot&&Number(slot.dataset.target)===num)placePiece(num);else selectPiece(num)}
 function render(){
- const board=document.getElementById("board"), tray=document.getElementById("pieces");board.innerHTML="";tray.innerHTML="";
- for(let i=0;i<TOTAL;i++){const slot=document.createElement("div");slot.className="slot";slot.dataset.target=i+1;
-   if(placed[i+1]){const im=document.createElement("img");im.src=`pieces/piece_${String(i+1).padStart(2,"0")}.jpg`;slot.appendChild(im)}
-   else if(i>=releasedCount){slot.classList.add("empty");slot.textContent="🔒"}
-   else slot.classList.add("empty");
-   board.appendChild(slot);
-   slot.ondragover=e=>{if(i<releasedCount)e.preventDefault()};
-   slot.ondrop=e=>{e.preventDefault();const num=Number(e.dataTransfer.getData("piece"));if(num===i+1){placed[num]=true;save();render();if(Object.keys(placed).length===TOTAL)document.getElementById("final").classList.add("show");else document.getElementById("message").textContent="Peça encaixada! ❤"}};
+ const board=document.getElementById("board"),tray=document.getElementById("pieces");board.innerHTML="";tray.innerHTML="";selectedPiece=null;updateCount();
+ for(let i=0;i<TOTAL;i++){const num=i+1,slot=document.createElement("div");slot.className="slot";slot.dataset.target=num;
+  if(placed[num]){const im=document.createElement("img");im.src=pieceSrc(num);im.alt=`Peça ${num}`;slot.appendChild(im)}
+  else if(i>=releasedCount){const lock=document.createElement("span");lock.className="lock";lock.textContent="♡";slot.appendChild(lock);slot.classList.add("empty")}
+  else slot.classList.add("empty");
+  if(!placed[num]&&i<releasedCount)slot.addEventListener("click",()=>{if(selectedPiece===num)placePiece(num);else if(selectedPiece)document.getElementById("message").textContent="Quase! Toque no espaço correspondente à peça selecionada. ❤"});
+  board.appendChild(slot)
  }
  const available=[];for(let i=1;i<=releasedCount;i++)if(!placed[i])available.push(i);
- order=shuffle(available);
- for(const n of order){const el=document.createElement("div");el.className="piece";el.draggable=true;const im=document.createElement("img");im.src=`pieces/piece_${String(n).padStart(2,"0")}.jpg`;el.appendChild(im);const lab=document.createElement("span");lab.className="label";lab.textContent=n;el.appendChild(lab);el.ondragstart=e=>e.dataTransfer.setData("piece",n);tray.appendChild(el)}
+ // Keep tray stable: don't reshuffle on every small interaction.
+ available.sort((a,b)=>a-b);
+ for(const n of available){const el=document.createElement("div");el.className="piece";el.dataset.piece=n;el.setAttribute("role","button");el.setAttribute("aria-label",`Peça ${n}`);el.tabIndex=0;
+  const im=document.createElement("img");im.src=pieceSrc(n);im.alt=`Peça ${n}`;el.appendChild(im);const lab=document.createElement("span");lab.className="label";lab.textContent=n;el.appendChild(lab);
+  el.addEventListener("click",e=>{if(e.detail===0)return;selectPiece(n)});
+  el.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();selectPiece(n)}});
+  el.addEventListener("pointerdown",e=>{if(e.pointerType==="mouse"){if(e.button!==0)return;beginDrag(e,el,n)}else{selectPiece(n)}});
+  el.addEventListener("pointermove",e=>{if(drag&&drag.el===el)moveGhost(e)});
+  el.addEventListener("pointerup",e=>{if(drag&&drag.el===el)endDrag(e)});
+  el.addEventListener("pointercancel",e=>{if(drag&&drag.el===el){drag.ghost.remove();el.classList.remove("dragging");drag=null}});
+  tray.appendChild(el)
+ }
+ document.getElementById("trayTitle").hidden=available.length===0;document.getElementById("instructions").hidden=available.length===0;
 }
 async function start(){try{const now=await getServerDate();releasedCount=released(now);document.getElementById("date").textContent=now.toLocaleDateString("pt-BR",{weekday:"long",day:"2-digit",month:"long",year:"numeric"});document.getElementById("counter").textContent=releasedCount===0?"A primeira peça será liberada em 1º de outubro.":`${releasedCount} de ${TOTAL} peças liberadas`;document.getElementById("bar").style.width=releasedCount/TOTAL*100+"%";document.getElementById("loading").hidden=true;document.getElementById("board").hidden=false;render();if(releasedCount===TOTAL&&Object.keys(placed).length===TOTAL)document.getElementById("final").classList.add("show")}catch(e){document.getElementById("loading").textContent="Não foi possível verificar a data oficial. Atualize a página em alguns segundos."}}
-document.getElementById("reset").onclick=()=>{placed={};save();render();document.getElementById("final").classList.remove("show")};
+document.getElementById("reset").onclick=()=>{if(!confirm("Embaralhar vai tirar todas as peças do tabuleiro. Continuar?"))return;placed={};save();document.getElementById("final").classList.remove("show");document.getElementById("message").textContent="";render()};
 start();
-</script></body></html>
+</script>
+</body></html>
